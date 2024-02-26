@@ -306,3 +306,7 @@ func TestAES_OFB_Decrypt(t *testing.T) {
 		})
 	}
 }
+
+func TestGenAESKey(t *testing.T) {
+	t.Logf("got = %v", GenAESKey())
+}

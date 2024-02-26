@@ -3,8 +3,9 @@ package crypt
 import (
 	"crypto/aes"
 	"crypto/cipher"
+	"crypto/rand"
 	"errors"
-	"github.com/ismdeep/rand"
+	"fmt"
 )
 
 // AESModeCBC 密码分组链接模式（Cipher Block Chaining (CBC)）
@@ -28,7 +29,10 @@ type AES struct {
 
 // GenAESKey 生成AES密钥
 func GenAESKey() string {
-	return rand.HexStr(32)
+	// Hex generate hex bytes
+	bytes := make([]byte, 16)
+	_, _ = rand.Read(bytes)
+	return fmt.Sprintf("%x", bytes)
 }
 
 // NewAES 创建AES实例
