@@ -1,6 +1,7 @@
 package aesutil
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -54,4 +55,16 @@ func TestEncryptAndDecrypt(t *testing.T) {
 	}()
 
 	wg.Wait()
+}
+
+func TestDecryptData(t *testing.T) {
+	plainData := []byte("Hello World.")
+	key := NewKey()
+
+	cipherData := EncryptData(key, plainData)
+
+	core.PanicIf(
+		core.IfErr(
+			string(plainData) != string(DecryptData(key, cipherData)),
+			errors.New("assert failed")))
 }

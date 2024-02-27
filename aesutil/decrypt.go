@@ -1,6 +1,7 @@
 package aesutil
 
 import (
+	"bytes"
 	"crypto/aes"
 	"crypto/cipher"
 	"errors"
@@ -22,4 +23,15 @@ func Decrypt(key *Key, cipherStreamReader io.Reader, decryptedStreamWriter io.Wr
 	reader := &cipher.StreamReader{S: stream, R: cipherStreamReader}
 
 	core.PanicIf(core.LastErr(io.Copy(decryptedStreamWriter, reader)))
+}
+
+func DecryptData(key *Key, cipherData []byte) []byte {
+	bufferReader, bufferWriter := io.Pipe()
+	go func() {
+		Decrypt(key, bytes.NewReader(cipherData), bufferWriter)
+		core.PanicIf(bufferWriter.Close())
+	}()
+	plainData, err := io.ReadAll(bufferReader)
+	core.PanicIf(err)
+	return plainData
 }

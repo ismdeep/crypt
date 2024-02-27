@@ -1,6 +1,7 @@
 package aesutil
 
 import (
+	"bytes"
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/rand"
@@ -45,4 +46,16 @@ func Encrypt(key *Key, plainReader io.Reader, encryptedStreamWriter io.Writer) {
 	core.PanicIf(bufferWriter.Close())
 
 	wg.Wait()
+}
+
+func EncryptData(key *Key, plainData []byte) []byte {
+	bufferReader, bufferWriter := io.Pipe()
+	go func() {
+		Encrypt(key, bytes.NewReader(plainData), bufferWriter)
+		core.PanicIf(bufferWriter.Close())
+	}()
+
+	encryptData, err := io.ReadAll(bufferReader)
+	core.PanicIf(err)
+	return encryptData
 }
